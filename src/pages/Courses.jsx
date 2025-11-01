@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import CourseCard from "../components/CourseCard";
 
 import webDev from "../assets/Web-Dev.jpeg";
@@ -9,57 +10,26 @@ import tailwindImg from "../assets/Tailwind-CSS.jpeg";
 import sqlImg from "../assets/SQL.jpeg";
 
 const mockCourses = [
-  {
-    id: 1,
-    title: "Intro to Web Development",
-    description: "Learn the basics of HTML, CSS, and JavaScript.",
-    image:
-      webDev,
-  },
-  {
-    id: 2,
-    title: "React for Beginners",
-    description: "Build modern web apps with React JS.",
-    image:
-      reactImg,
-  },
-  {
-    id: 3,
-    title: "Python Fundamentals",
-    description: "Start coding in Python — the most beginner-friendly language.",
-    image:
-      pythonImg,
-  },
-  {
-    id: 4,
-    title: "Git & GitHub",
-    description: "Master version control and collaboration using Git and GitHub.",
-    image:
-      githubImg,
-  },
-  {
-    id: 5,
-    title: "Tailwind CSS",
-    description: "Style modern websites rapidly using the Tailwind CSS framework.",
-    image:
-      tailwindImg,
-  },
-  {
-    id: 6,
-    title: "SQL Essentials",
-    description: "Learn to query, manage, and analyze data using SQL databases.",
-    image:
-      sqlImg,
-  },
+  // ... (Your mockCourses array remains the same)
+  { id: 1, title: "Intro to Web Development", description: "Learn the basics of HTML, CSS, and JavaScript.", image: webDev },
+  { id: 2, title: "React for Beginners", description: "Build modern web apps with React JS.", image: reactImg },
+  { id: 3, title: "Python Fundamentals", description: "Start coding in Python — the most beginner-friendly language.", image: pythonImg },
+  { id: 4, title: "Git & GitHub", description: "Master version control and collaboration using Git and GitHub.", image: githubImg },
+  { id: 5, title: "Tailwind CSS", description: "Style modern websites rapidly using the Tailwind CSS framework.", image: tailwindImg },
+  { id: 6, title: "SQL Essentials", description: "Learn to query, manage, and analyze data using SQL databases.", image: sqlImg },
 ];
+
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [user, setUser] = useState(null);
+  
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     setCourses(mockCourses);
+    // User object in localStorage no longer contains password, only ID/Name
     const savedUser = JSON.parse(localStorage.getItem("user"));
     const savedEnrolls = JSON.parse(localStorage.getItem("enrolled")) || [];
     setUser(savedUser);
@@ -67,10 +37,25 @@ const Courses = () => {
   }, []);
 
   const handleEnroll = (course) => {
-    if (!user) return alert("Please log in first!");
+    // Check authentication and redirect to login
+    if (!user) {
+      alert("Please log in first to enroll in a course!");
+      // Save the current path so the user can be redirected back after login
+      sessionStorage.setItem("redirectPath", `/courses/${course.id}`); 
+      navigate("/login");
+      return;
+    }
+
+    // Check if already enrolled (Optional improvement)
+    if (enrolledCourses.some(c => c.id === course.id)) {
+        return;
+    }
+    
+    // Perform enrollment
     const updated = [...enrolledCourses, course];
     setEnrolledCourses(updated);
     localStorage.setItem("enrolled", JSON.stringify(updated));
+    alert(`Successfully enrolled in ${course.title}!`);
   };
 
   return (
