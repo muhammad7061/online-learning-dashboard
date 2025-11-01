@@ -15,23 +15,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route
-            path="courses"
-            element={
-              <ProtectedRoute>
-                <Courses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="courses/:id"
-            element={
-              <ProtectedRoute>
-                <CourseDetail />
-              </ProtectedRoute>
-            }
-          />
+          
+          {/* Public Routes for Browsing */}
+          <Route path="courses" element={<Courses />} />
+          <Route path="courses/:id" element={<CourseDetail />} />
           <Route path="about" element={<About />} />
+          <Route path="login" element={<Login />} />
+          
+          {/* Protected Routes: Only accessible when logged in */}
           <Route
             path="profile"
             element={
@@ -40,7 +31,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="login" element={<Login />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
