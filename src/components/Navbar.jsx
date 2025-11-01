@@ -8,9 +8,26 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // We listen to changes in localStorage implicitly here, 
+    // but in a real app, a context/state manager is better for live updates.
     const savedUser = JSON.parse(localStorage.getItem("user"));
     setUser(savedUser);
   }, []);
+
+  // Helper function to get initials (First letter of first name and last name)
+  const getUserInitials = (name) => {
+    if (!name) return "";
+    
+    // Split the name by space and handle multiple spaces
+    const nameParts = name.trim().split(/\s+/);
+    let initials = nameParts[0].charAt(0).toUpperCase();
+
+    // If there is more than one part, take the initial of the last part
+    if (nameParts.length > 1) {
+      initials += nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+    }
+    return initials;
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -67,22 +84,13 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <div
-              className="flex flex-col items-center cursor-pointer"
+              className="flex items-center cursor-pointer"
               onClick={() => navigate("/profile")}
             >
+              {/* UPDATED: Use getUserInitials function here */}
               <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold">
-                {user.name.charAt(0).toUpperCase()}
+                {getUserInitials(user.name)}
               </div>
-              {/* <span className="text-sm text-gray-700">{user.name}</span> */}
-              {/* <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLogout();
-                }}
-                className="text-xs text-red-500 mt-1 hover:underline"
-              >
-                Logout
-              </button> */}
             </div>
           ) : (
             <Link
